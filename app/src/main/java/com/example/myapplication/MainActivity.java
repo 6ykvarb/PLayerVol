@@ -17,9 +17,11 @@ public class MainActivity extends AppCompatActivity  implements Runnable{
     // создание полей
     private MediaPlayer mediaPlayer = new MediaPlayer(); // создание поля медиа-плеера
     private SeekBar seekBar; // создание поля SeekBar
+    private SeekBar volBar; // создание поля volBar
     private boolean wasPlaying = false; // поле проигрывания аудио-файла
     private FloatingActionButton fabPlayPause; // поле кнопки проигрывания и постановки на паузу аудиофайла
     private TextView seekBarHint; // поле информации у SeekBar
+    private TextView textVolHint; // поле информации у volBar
 
 
     @Override
@@ -31,6 +33,8 @@ public class MainActivity extends AppCompatActivity  implements Runnable{
         fabPlayPause = findViewById(R.id.fabPlayPause);
         seekBarHint = findViewById(R.id.seekBarHint);
         seekBar = findViewById(R.id.seekBar);
+        volBar = findViewById(R.id.volBar);
+        textVolHint = findViewById(R.id.textVolHint);
 
         // создание слушателя нажатия кнопки fabPlayPause
         fabPlayPause.setOnClickListener(new View.OnClickListener() {
@@ -39,6 +43,27 @@ public class MainActivity extends AppCompatActivity  implements Runnable{
                 playSong(); // воспроизведение музыки
             }
         });
+        volBar.setProgress(100);
+        volBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                textVolHint.setVisibility(View.VISIBLE);
+                textVolHint.setText("" + volBar.getProgress() + "%");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                float vol = volBar.getProgress();
+                mediaPlayer.setVolume(vol/100, vol/100);
+
+            }
+        });
+
 
         // создание слушателя изменения SeekBar
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -126,7 +151,6 @@ public class MainActivity extends AppCompatActivity  implements Runnable{
                 descriptor.close(); // закрытие дескриптора
 
                 mediaPlayer.prepare(); // ассинхронная подготовка плейера к проигрыванию
-                //mediaPlayer.setVolume(0.7f, 0.7f); // задание уровня громкости левого и правого динамиков
                 mediaPlayer.setLooping(false); // назначение отстутствия повторов
                 seekBar.setMax(mediaPlayer.getDuration()); // ограниечение seekBar длинной трека
 
@@ -182,3 +206,4 @@ public class MainActivity extends AppCompatActivity  implements Runnable{
         }
     }
 }
+
